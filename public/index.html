@@ -3,8 +3,11 @@
 <section id="shop" class="panel"><h2>① 冒険の道具をえらぼう</h2><p>みんなで相談して、10G以内で選ぼう。正解はありません。</p><div id="items" class="grid"></div><div class="actions"><button id="start" class="primary">この道具で出発！</button></div></section>
 <section id="game" class="panel hidden"><div class="progress" id="progress"></div><img id="stageImage" class="stage-image" src="" alt="ステージ画像"><div class="event"><span id="eventNo"></span><h2 id="eventTitle"></h2><p id="eventDesc"></p></div><div class="inventory"><b>🎒 持ち物：</b><span id="inventory"></span></div><label for="strategy"><h3>みんなの作戦</h3><span>どんな方法でもOK。相談したアイデアを書いてみよう。</span></label><textarea id="strategy" rows="5" placeholder="例：透明マントでこっそり近づいて、ロープを使って…"></textarea><div class="actions"><button id="judge" class="primary">✨ AIゲームマスターに聞く</button></div><div id="loading" class="hidden notice">AIゲームマスターが物語を考えています…</div><div id="result" class="result hidden"><h3 id="resultTitle"></h3><p id="resultMessage"></p><p class="reward">🎁 <b>発見・報酬：</b><span id="reward"></span></p><p class="next">💬 <b>次に考えてみよう：</b><span id="next"></span></p><button id="nextEvent">次の場面へ →</button></div></section>
 <section id="finish" class="panel hidden">
-  <img src="clear.png.PNG" class="stage-image" alt="冒険クリア">
+  <img src="clear.PNG" class="stage-image" alt="冒険クリア">
   <h2>🎉 冒険クリア！</h2>
   <p>みんなのアイデアと協力で、最後まで冒険できました。</p>
   <button onclick="location.reload()">もう一度あそぶ</button>
 </section>
+<script src="app.js"></script>
+</body>
+</html>
