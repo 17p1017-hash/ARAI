@@ -171,11 +171,11 @@ app.post('/api/judge', async (req,res)=>{
   model: process.env.OPENAI_MODEL || 'gpt-5.6',
   input: `${activePrompt}\n\n現在のイベント： ${ev.title}\n状況: ${ev.desc}\n所持アイテム: ${inventory.join('、') || 'なし'}\n子どもたちの作戦: ${strategy}`
 });
-    let text = response.output_text.trim().replace(/^```json\s*/,'').replace(/```$/,'').trim();
-    res.json(JSON.parse(text));
-  } catch(e) {
-    console.error(e);
-    res.status(500).json({error:'AI判定に失敗しました。もう一度試してください。'});
-  }
+     let text = response.output_text.trim().replace(/^```json\s*/,'').replace(/```$/,'').trim();
+res.json(JSON.parse(text));
+} catch(e) {
+  console.error(e);
+  res.status(500).json({error:'AI判定に失敗しました。もう一度試してください。'});
+}
 });
 app.listen(process.env.PORT || 3000, ()=>console.log('http://localhost:'+(process.env.PORT||3000)));
