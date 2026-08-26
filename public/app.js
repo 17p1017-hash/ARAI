@@ -60,8 +60,6 @@ $('judge').onclick=async()=>{
   ];
 
   const r=await fetch('/api/judge',{
-
-    const r=await fetch('/api/judge',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
