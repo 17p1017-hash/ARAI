@@ -73,18 +73,70 @@ $('judge').onclick=async()=>{
     const d=await r.json();
     if(!r.ok)throw new Error(d.error||'エラー');
 
-    $('resultTitle').textContent=d.title;
+   $('resultTitle').textContent=d.title;
 $('resultMessage').textContent=d.message;
-$('reward').textContent=d.reward;
-$('next').textContent=d.next;
+$('reward').textContent=d.reward || '';
+$('next').textContent=d.next || '';
 
-if(eventIndex !== 3 && d.reward && d.reward.trim()){
+const merchantOptions = $('merchantOptions');
+merchantOptions.innerHTML = '';
+merchantOptions.classList.add('hidden');
+
+if(eventIndex === 3 && Array.isArray(d.options)){
+
+  merchantOptions.classList.remove('hidden');
+
+  d.options.forEach(option => {
+
+    const box = document.createElement('div');
+    box.className = 'merchant-option';
+
+    const materials = Array.isArray(option.materials)
+      ? option.materials.join(' ＋ ')
+      : '';
+
+    box.innerHTML = `
+      <h3>⚔️ ${option.name}</h3>
+      <p><b>材料：</b>${materials}</p>
+      <p><b>能力：</b>${option.ability}</p>
+      <button type="button">この装備を作る！</button>
+    `;
+
+    const button = box.querySelector('button');
+
+    button.onclick = () => {
+
+      if(!rewards.includes(option.name)){
+        rewards.push(option.name);
+      }
+
+      $('inventory').textContent = [
+        ...selected.map(i=>items[i][1]),
+        ...rewards
+      ].join('、');
+
+      $('reward').textContent = option.name + ' を作ってもらった！';
+      $('next').textContent = 'この装備を魔王戦でどう使う？';
+
+      merchantOptions
+        .querySelectorAll('button')
+        .forEach(b => b.disabled = true);
+
+      button.textContent = '✓ この装備に決定！';
+    };
+
+    merchantOptions.appendChild(box);
+  });
+
+}else if(d.reward && d.reward.trim()){
+
   const newReward = d.reward.trim();
 
   if(!rewards.includes(newReward)){
     rewards.push(newReward);
   }
 }
+
 
 const currentInventory = [
   ...selected.map(i=>items[i][1]),
