@@ -58,7 +58,7 @@ const MERCHANT_PROMPT = `あなたは小学生向け協力型ファンタジーT
 {"title":"商人からの提案","message":"2〜4文の楽しい返答","reward":"交換・完成した装備や発見","next":"次にみんなで考える短い問い"}
 `;
 app.post('/api/judge', async (req,res)=>{
-  const {eventIndex=0, strategy='', inventory=[]} = req.body || {};
+  const {eventIndex=0, strategy='', inventory=[], mode='adventure'} = req.body || {};
   if (!strategy.trim()) return res.status(400).json({error:'作戦を入力してください。'});
   if (!process.env.OPENAI_API_KEY) return res.status(503).json({error:'OPENAI_API_KEY が未設定です。README.md を確認してください。'});
   try {
