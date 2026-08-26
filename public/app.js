@@ -1,5 +1,11 @@
 const items=[['⚔️','剣',5],['🪄','魔法の杖',5],['🫥','透明マント',4],['⛺','テント',3],['📕','伝説の本',3],['🧪','回復薬',2],['🪢','ロープ',2],['🗺️','地図',1],['🍀','幸運のお守り',1]];
-const events=[['魔法の森','不思議な霧で道が見えません。みんなの道具とアイデアで進む方法を考えよう。'],['ドラゴン出現','大きなドラゴンが道をふさいでいます。戦う以外の方法も自由に考えてOK！'],['古代神殿','古い神殿には謎の扉があります。持っている道具をどう使う？'],['魔王城','いよいよ魔王城。みんなで考えた作戦で最後の冒険に挑もう！']];
+const events=[
+  ['魔法の森','不思議な霧で道が見えません。みんなの道具とアイデアで進む方法を考えよう。'],
+  ['ドラゴン出現','大きなドラゴンが道をふさいでいます。戦う以外の方法も自由に考えてOK！'],
+  ['古代神殿','古い神殿には謎の扉があります。持っている道具をどう使う？'],
+  ['旅の商人','魔王城へ向かう途中、旅の商人に出会いました。集めた素材や持っている道具を使って、交換や装備作りを相談してみよう！'],
+  ['魔王城','ついに魔王城へ到着！魔王との決戦です。みんなで力を合わせて戦おう！']
+];
 let selected=[],gold=10,eventIndex=0;
 const $=id=>document.getElementById(id); const itemBox=$('items');
 items.forEach(([icon,name,price],i)=>{const b=document.createElement('button');b.className='item';b.innerHTML=`<span class="price">${price}G</span><strong>${icon} ${name}</strong><small>クリックして選ぶ</small>`;b.onclick=()=>{if(selected.includes(i)){selected=selected.filter(x=>x!==i);gold+=price;b.classList.remove('selected')}else if(gold>=price){selected.push(i);gold-=price;b.classList.add('selected')}$('gold').textContent=gold;$('start').disabled=selected.length===0};itemBox.appendChild(b)});$('start').disabled=true;
@@ -12,13 +18,17 @@ function renderEvent(){
   $('inventory').textContent=selected.map(i=>items[i][1]).join('、');
   $('strategy').value='';
   $('result').classList.add('hidden');
-
   const stageImages=[
-  'forest.png.PNG',
-  'dragon.png.PNG',
-  'ruins.png.PNG',
-  'demon_castle.png.PNG'
+  'forest.PNG',
+  'dragon.PNG',
+  'ruins.PNG',
+  'merchant.PNG',
+  'demon_castle.PNG'
 ];
+
+$('stageImage').src=stageImages[eventIndex] || 'demon_castle.PNG';
+
+    
 
   $('stageImage').src=stageImages[eventIndex] || 'demon_castle.png.PNG';
 }
