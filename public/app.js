@@ -14,11 +14,11 @@ function renderEvent(){
   $('result').classList.add('hidden');
 
   const stageImages=[
-    'forest.png.PNG',
-    'ruins.png.PNG',
-    'dragon.png.PNG',
-    'demon_castle.png.PNG'
-  ];
+  'forest.png.PNG',
+  'dragon.png.PNG',
+  'ruins.png.PNG',
+  'demon_castle.png.PNG'
+];
 
   $('stageImage').src=stageImages[eventIndex] || 'demon_castle.png.PNG';
 }
