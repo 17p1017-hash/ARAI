@@ -18,6 +18,13 @@ function renderEvent(){
   $('inventory').textContent=selected.map(i=>items[i][1]).join('、');
   $('strategy').value='';
   $('result').classList.add('hidden');
+  if(eventIndex===3){
+  $('strategy').placeholder='例：竜の鱗と剣を使って、新しい装備を作って！';
+  $('judge').textContent='🧳 商人に相談する';
+}else{
+  $('strategy').placeholder='例：透明マントでこっそり近づいて、ロープを使って…';
+  $('judge').textContent='✨ AIゲームマスターに聞く';
+}
   const stageImages=[
   'forest.PNG',
   'dragon.PNG',
