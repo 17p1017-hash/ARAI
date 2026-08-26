@@ -26,8 +26,6 @@ function renderEvent(){
   'demon_castle.PNG'
 ];
 
-$('stageImage').src=stageImages[eventIndex] || 'demon_castle.PNG';
-
     
 
   $('stageImage').src=stageImages[eventIndex] || 'demon_castle.png.PNG';
