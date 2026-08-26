@@ -169,7 +169,10 @@ console.log('BODY:', req.body);
     const client = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
     const ev = EVENTS[Math.max(0, Math.min(EVENTS.length-1, eventIndex))];
     const activePrompt = mode === 'merchant' ? MERCHANT_PROMPT : GM_PROMPT;
+   console.log('=== OpenAI API 呼び出し開始 ===');
+console.log('MODEL:', process.env.OPENAI_MODEL || 'gpt-5.6');
     const response = await client.responses.create({
+      console.log('=== OpenAI API から返答あり ===');
   model: process.env.OPENAI_MODEL || 'gpt-5.6',
   input: `${activePrompt}\n\n現在のイベント： ${ev.title}\n状況: ${ev.desc}\n所持アイテム: ${inventory.join('、') || 'なし'}\n子どもたちの作戦: ${strategy}`
 });
