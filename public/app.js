@@ -29,6 +29,47 @@ function renderEvent(){
     
 
   $('stageImage').src=stageImages[eventIndex] || 'demon_castle.png.PNG';
-}
-$('judge').onclick=async()=>{const strategy=$('strategy').value.trim();if(!strategy)return alert('みんなの作戦を書いてください。');$('judge').disabled=true;$('loading').classList.remove('hidden');$('result').classList.add('hidden');try{const r=await fetch('/api/judge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({eventIndex,strategy,inventory:selected.map(i=>items[i][1])})});const d=await r.json();if(!r.ok)throw new Error(d.error||'エラー');$('resultTitle').textContent=d.title;$('resultMessage').textContent=d.message;$('reward').textContent=d.reward;$('next').textContent=d.next;$('result').classList.remove('hidden')}catch(e){alert(e.message)}finally{$('judge').disabled=false;$('loading').classList.add('hidden')}};
+};
+$('judge').onclick=async()=>{
+  const strategy=$('strategy').value.trim();
+  if(!strategy)return alert(
+    eventIndex===3
+      ? '商人に相談したいことを書いてください。'
+      : 'みんなの作戦を書いてください。'
+  );
+
+  $('judge').disabled=true;
+  $('loading').classList.remove('hidden');
+  $('result').classList.add('hidden');
+
+  try{
+    const inventory=selected.map(i=>items[i][1]);
+
+    const r=await fetch('/api/judge',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        eventIndex,
+        strategy,
+        inventory,
+        mode:eventIndex===3 ? 'merchant' : 'adventure'
+      })
+    });
+
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||'エラー');
+
+    $('resultTitle').textContent=d.title;
+    $('resultMessage').textContent=d.message;
+    $('reward').textContent=d.reward;
+    $('next').textContent=d.next;
+    $('result').classList.remove('hidden');
+
+  }catch(e){
+    alert(e.message);
+  }finally{
+    $('judge').disabled=false;
+    $('loading').classList.add('hidden');
+  }
+};
 $('nextEvent').onclick=()=>{eventIndex++;if(eventIndex>=events.length){$('game').classList.add('hidden');$('finish').classList.remove('hidden')}else renderEvent()};
