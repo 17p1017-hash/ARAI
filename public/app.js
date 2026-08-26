@@ -35,7 +35,7 @@ function renderEvent(){
 
     
 
-  $('stageImage').src=stageImages[eventIndex] || 'demon_castle.png.PNG';
+  $('stageImage').src=stageImages[eventIndex] || 'demon_castle.PNG';
 };
 $('judge').onclick=async()=>{
   const strategy=$('strategy').value.trim();
