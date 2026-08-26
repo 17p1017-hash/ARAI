@@ -160,6 +160,8 @@ const MERCHANT_PROMPT = `あなたは小学生向け協力型ファンタジーT
   "next":"どの装備を作る？"
 }`;
 app.post('/api/judge', async (req,res)=>{
+  console.log('=== /api/judge にリクエストが来た ===');
+console.log('BODY:', req.body);
   const {eventIndex=0, strategy='', inventory=[], mode='adventure'} = req.body || {};
   if (!strategy.trim()) return res.status(400).json({error:'作戦を入力してください。'});
   if (!process.env.OPENAI_API_KEY) return res.status(503).json({error:'OPENAI_API_KEY が未設定です。README.md を確認してください。'});
