@@ -6,7 +6,6 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const EVENTS = [
-const EVENTS = [
   {
     title:'魔法の森',
     desc:'不思議な霧で道が見えません。みんなの道具とアイデアで進む方法を考えよう。'
