@@ -147,8 +147,9 @@ $('inventory').textContent = currentInventory.join('、');
 
 $('result').classList.remove('hidden');
   }catch(e){
-    alert(e.message);
-  }finally{
+  console.error(e);
+  alert('エラー：' + e.message);
+}finally{
     $('judge').disabled=false;
     $('loading').classList.add('hidden');
   }
