@@ -64,9 +64,10 @@ app.post('/api/judge', async (req,res)=>{
   try {
     const client = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
     const ev = EVENTS[Math.max(0, Math.min(EVENTS.length-1, eventIndex))];
+    const activePrompt = mode === 'merchant' ? MERCHANT_PROMPT : GM_PROMPT;
     const response = await client.responses.create({
-      model: process.env.OPENAI_MODEL || 'gpt-5.6',
-      input: `${GM_PROMPT}\n\n現在のイベント: ${ev.title}\n状況: ${ev.desc}\n所持アイテム: ${inventory.join('、') || 'なし'}\n子どもたちの作戦: ${strategy}`
+      model: process.env.OPENAI_MODEL || 'gpt-
+      input: `${activePrompt}\n\n現在のイベント： ${ev.title}\n状況: ${ev.desc}\n所持アイテム: ${inventory.join('、') || 'なし'}\n子どもたちの作戦: ${strategy}`
     });
     let text = response.output_text.trim().replace(/^```json\s*/,'').replace(/```$/,'').trim();
     res.json(JSON.parse(text));
