@@ -78,14 +78,20 @@ $('resultMessage').textContent=d.message;
 $('reward').textContent=d.reward;
 $('next').textContent=d.next;
 
-if(d.reward && !rewards.includes(d.reward)){
-  rewards.push(d.reward);
+if(d.reward && d.reward.trim()){
+  const newReward = d.reward.trim();
+
+  if(!rewards.includes(newReward)){
+    rewards.push(newReward);
+  }
 }
 
-$('inventory').textContent=[
+const currentInventory = [
   ...selected.map(i=>items[i][1]),
   ...rewards
-].join('、');
+];
+
+$('inventory').textContent = currentInventory.join('、');
 
 $('result').classList.remove('hidden');
   }catch(e){
