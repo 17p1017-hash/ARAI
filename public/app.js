@@ -78,7 +78,7 @@ $('resultMessage').textContent=d.message;
 $('reward').textContent=d.reward;
 $('next').textContent=d.next;
 
-if(d.reward && d.reward.trim()){
+if(eventIndex !== 3 && d.reward && d.reward.trim()){
   const newReward = d.reward.trim();
 
   if(!rewards.includes(newReward)){
