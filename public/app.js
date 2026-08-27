@@ -105,50 +105,28 @@ if(eventIndex === 3 && Array.isArray(d.options)){
     const button = box.querySelector('button');
 
     button.onclick = () => {
+  const usedMaterials = Array.isArray(option.materials) ? option.materials : [];
 
-  const usedMaterials = Array.isArray(option.materials)
-    ? option.materials
-    : [];
+  selected = selected.filter(
+    itemIndex => !usedMaterials.includes(items[itemIndex][1])
+  );
 
-  // 商人が指定した材料を持ち物から消す
-  usedMaterials.forEach(material => {
+  rewards = rewards.filter(
+    rewardName => !usedMaterials.includes(rewardName)
+  );
 
-    // 最初に買ったアイテムから探す
-    const selectedPosition = selected.findIndex(
-      itemIndex => items[itemIndex][1] === material
-    );
-
-    if(selectedPosition !== -1){
-      selected.splice(selectedPosition, 1);
-      return;
-    }
-
-    // 冒険中にもらった報酬から探す
-    const rewardPosition = rewards.indexOf(material);
-
-    if(rewardPosition !== -1){
-      rewards.splice(rewardPosition, 1);
-    }
-  });
-
-  // 完成した装備を持ち物に追加
-  if(!rewards.includes(option.name)){
+  if (!rewards.includes(option.name)) {
     rewards.push(option.name);
   }
 
-  // 持ち物表示を更新
   $('inventory').textContent = [
     ...selected.map(i => items[i][1]),
     ...rewards
   ].join('、');
 
-  $('reward').textContent =
-    option.name + ' を作ってもらった！';
+  $('reward').textContent = option.name + ' を作ってもらった！';
+  $('next').textContent = 'この装備を魔王戦でどう使う？';
 
-  $('next').textContent =
-    'この装備を魔王戦でどう使う？';
-
-  // ほかの装備を選べないようにする
   merchantOptions
     .querySelectorAll('button')
     .forEach(b => b.disabled = true);
