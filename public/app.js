@@ -8,6 +8,7 @@ const events=[
 ];
 let selected=[],gold=10,eventIndex=0;
 let rewards=[];
+let equipmentAbilities={};
 const $=id=>document.getElementById(id); const itemBox=$('items');
 items.forEach(([icon,name,price],i)=>{const b=document.createElement('button');b.className='item';b.innerHTML=`<span class="price">${price}G</span><strong>${icon} ${name}</strong><small>クリックして選ぶ</small>`;b.onclick=()=>{if(selected.includes(i)){selected=selected.filter(x=>x!==i);gold+=price;b.classList.remove('selected')}else if(gold>=price){selected.push(i);gold-=price;b.classList.add('selected')}$('gold').textContent=gold;$('start').disabled=selected.length===0};itemBox.appendChild(b)});$('start').disabled=true;
 $('start').onclick=()=>{$('shop').classList.add('hidden');$('game').classList.remove('hidden');renderEvent()};
