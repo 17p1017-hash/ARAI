@@ -1,7 +1,9 @@
 const express = require('express');
 const path = require('path');
 const OpenAI = require('openai');
+
 const app = express();
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -24,7 +26,7 @@ const EVENTS = [
   },
   {
     title:'魔王城',
-    desc:'ついに魔王城へ到着！魔王との決戦です。みんなで力を合わせて戦おう！'
+    desc:'ついに魔王城へ到着！3ターンの決戦です。みんなで力を合わせて戦おう！'
   }
 ];
 
@@ -44,13 +46,11 @@ const GM_PROMPT = `あなたは小学生向け協力型ファンタジーTRPGの
 - モンスターと戦う作戦も、正式な選択肢として扱う。
 - 「戦う」「逃げる」「仲良くする」「罠を使う」「魔法を使う」「道具を工夫する」など、どの方法も同じように尊重する。
 - 子どもたちがドラゴンと戦う作戦を選び、協力や道具の工夫がある場合は、ドラゴンを倒したり撃退したりしてよい。
-- 魔王との戦いでも、良い作戦なら魔王を倒す、封印する、追い払う、降参させるなどの決着を認める。
 - 戦闘はゲームや冒険らしく描写し、血、傷、死亡などの生々しい表現はしない。
 - 戦わない解決方法も同じように歓迎する。
 
 【アイテムについて】
 - 所持アイテムの特徴を物語に反映する。
-- 商人から作ってもらった装備がある場合、その能力や特徴を作戦に活かす。
 - アイテムを使った工夫があれば、結果に具体的に反映する。
 - 報酬は冒険で実際に使えそうなものにする。
 - 報酬を出す場合、名前は短く分かりやすくする。
@@ -63,6 +63,8 @@ const GM_PROMPT = `あなたは小学生向け協力型ファンタジーTRPGの
 
 出力は必ずJSONのみ:
 {"title":"短い結果タイトル","message":"2〜4文の物語結果","reward":"短い報酬名。報酬がなければ空文字","next":"次にみんなで考える短い問い"}`;
+
+
 const MERCHANT_PROMPT = `あなたは小学生向け協力型ファンタジーTRPGに登場する、やさしくて腕のいい「旅の商人」です。
 
 この商人イベントは、最後の「魔王城」で使う装備を準備する重要な場面です。
@@ -119,13 +121,6 @@ const MERCHANT_PROMPT = `あなたは小学生向け協力型ファンタジーT
 子どもから相談を受けたら、魔王戦で役立ちそうな装備を必ず3種類提案してください。
 
 3つはできるだけ違う役割にしてください。
-例：
-- 攻撃に役立つ装備
-- 防御や仲間を守る装備
-- 魔王の魔法や動きを邪魔する特殊装備
-
-ただし、毎回この3分類に固定する必要はありません。
-子どもの相談内容と所持アイテムに合わせて、ワクワクする3案を考えてください。
 
 それぞれについて、
 - 短くかっこいい装備名
@@ -159,7 +154,78 @@ const MERCHANT_PROMPT = `あなたは小学生向け協力型ファンタジーT
   "reward":"",
   "next":"どの装備を作る？"
 }`;
+
+
+const BOSS_PROMPT = `あなたは小学生向け協力型ファンタジーTRPGの最終決戦「魔王戦」を担当するゲームマスターです。
+
+魔王戦は全部で3ターンです。
+
+子どもたちが毎ターン作戦を考え、その結果が次のターンへつながります。
+
+【最重要ルール】
+- 必ずこれまでのターンの結果を引き継ぐ。
+- 前のターンで起きたことを無かったことにしない。
+- 子どもたちが選んだ作戦を勝手に別の作戦へ変更しない。
+- 所持アイテムと、そのアイテムに書かれている能力を具体的に反映する。
+- 商人から作ってもらった装備は、書かれている能力を特に重視する。
+- 持っていない道具や能力を勝手に追加しない。
+- 子どもたちの工夫や協力を具体的に肯定する。
+
+【戦い方】
+戦うことだけが正解ではありません。
+
+子どもたちは、
+- 武器で戦う
+- 魔法を使う
+- 道具を工夫する
+- 魔王を封印する
+- 魔王を追い払う
+- 魔王を説得する
+- 罠を使う
+- 仲間を守る
+など、自由な方法を選べます。
+
+作戦に協力や工夫があれば、その効果をしっかり物語に反映してください。
+
+【1ターン目】
+- 魔王との戦いが始まる場面。
+- 子どもたちの作戦によって、魔王にダメージを与える、隙を作る、攻撃を防ぐ、弱点を見つけるなど、意味のある変化を起こす。
+- 原則として、まだ魔王戦を完全には終わらせない。
+- 次の作戦につながる状況を作る。
+
+【2ターン目】
+- 1ターン目の結果を必ず引き継ぐ。
+- 戦況をさらに大きく動かす。
+- 子どもたちの作戦が良ければ、魔王をかなり追い詰めてもよい。
+- 原則として、まだ最終決着にはしない。
+- 最終ターンで何をするか考えたくなる展開にする。
+
+【3ターン目】
+- 最終ターン。
+- 1ターン目と2ターン目の結果を必ず引き継ぐ。
+- 子どもたちの最後の作戦を尊重する。
+- このターンで必ず魔王戦に決着をつける。
+- 良い作戦なら、魔王を倒す、封印する、追い払う、降参させる、心を変えさせるなど、その作戦に合った勝利を認める。
+- 作戦がうまくいかない場合でも、怖い敗北や死亡では終わらせず、みんなの協力によって冒険として納得できる決着にする。
+- 3ターン目では新しい報酬よりも、決着そのものを大切にする。
+
+【表現】
+- 血、傷、死亡などの生々しい描写はしない。
+- 怖すぎる表現は避ける。
+- 小学2〜6年生が理解できる短くやさしい日本語にする。
+- ワクワクするゲームらしい描写にする。
+
+出力は必ずJSONのみ:
+{
+  "title":"短い結果タイトル",
+  "message":"2〜4文の物語結果",
+  "reward":"報酬がある場合は短い名前。なければ空文字",
+  "next":"次に考えること。3ターン目なら冒険の締めくくりになる短い言葉"
+}`;
+
+
 app.post('/api/judge', async (req, res) => {
+
   console.log('=== /api/judge にリクエストが来た ===');
   console.log('BODY:', req.body);
 
@@ -167,32 +233,97 @@ app.post('/api/judge', async (req, res) => {
     eventIndex = 0,
     strategy = '',
     inventory = [],
-    mode = 'adventure'
+    mode = 'adventure',
+    bossTurn = null,
+    maxBossTurns = 3,
+    bossHistory = []
   } = req.body || {};
 
   if (!strategy.trim()) {
     return res.status(400).json({
-      error: '作戦を入力してください。'
+      error:'作戦を入力してください。'
     });
   }
 
   if (!process.env.OPENAI_API_KEY) {
     return res.status(503).json({
-      error: 'OPENAI_API_KEY が未設定です。README.md を確認してください。'
+      error:'OPENAI_API_KEY が未設定です。README.md を確認してください。'
     });
   }
 
   try {
+
     const client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
+      apiKey:process.env.OPENAI_API_KEY
     });
 
     const ev = EVENTS[
-      Math.max(0, Math.min(EVENTS.length - 1, eventIndex))
+      Math.max(
+        0,
+        Math.min(EVENTS.length - 1, eventIndex)
+      )
     ];
 
-    const activePrompt =
-      mode === 'merchant' ? MERCHANT_PROMPT : GM_PROMPT;
+    let activePrompt = GM_PROMPT;
+
+    if (mode === 'merchant') {
+      activePrompt = MERCHANT_PROMPT;
+    }
+
+    if (mode === 'boss') {
+      activePrompt = BOSS_PROMPT;
+    }
+
+
+    let extraContext = '';
+
+    if (mode === 'boss') {
+
+      const safeBossTurn =
+        Math.max(
+          1,
+          Math.min(maxBossTurns, Number(bossTurn) || 1)
+        );
+
+      let historyText = 'まだありません。';
+
+      if (
+        Array.isArray(bossHistory) &&
+        bossHistory.length > 0
+      ) {
+
+        historyText = bossHistory
+          .map(h => {
+            return `
+${h.turn}ターン目
+作戦：${h.strategy || ''}
+結果タイトル：${h.title || ''}
+結果：${h.message || ''}
+`;
+          })
+          .join('\n');
+      }
+
+      extraContext = `
+
+【現在の魔王戦】
+現在は ${safeBossTurn} / ${maxBossTurns} ターン目です。
+
+【これまでの戦い】
+${historyText}
+
+【今回の重要指示】
+${safeBossTurn < maxBossTurns
+  ? `まだ最終ターンではありません。
+今回の作戦によって戦況を進めてください。
+魔王戦を完全には終わらせず、次のターンにつながる結果にしてください。`
+  : `これが最終ターンです。
+これまでの戦いをすべて踏まえてください。
+今回の作戦を尊重し、このターンで必ず魔王戦に決着をつけてください。`
+}
+`;
+    }
+
 
     console.log('=== OpenAI API 呼び出し開始 ===');
     console.log(
@@ -200,15 +331,41 @@ app.post('/api/judge', async (req, res) => {
       process.env.OPENAI_MODEL || 'gpt-5.6'
     );
 
-    const response = await client.responses.create({
-      model: process.env.OPENAI_MODEL || 'gpt-5.6',
-      input: `${activePrompt}
+    if (mode === 'boss') {
+      console.log(
+        'BOSS TURN:',
+        bossTurn,
+        '/',
+        maxBossTurns
+      );
+
+      console.log(
+        'BOSS HISTORY:',
+        bossHistory
+      );
+    }
+
+
+    const response =
+      await client.responses.create({
+
+        model:
+          process.env.OPENAI_MODEL || 'gpt-5.6',
+
+        input: `${activePrompt}
 
 現在のイベント：${ev.title}
 状況：${ev.desc}
-所持アイテム：${inventory.join('、') || 'なし'}
-子どもたちの作戦：${strategy}`
-    });
+
+所持アイテム：
+${inventory.join('、') || 'なし'}
+
+${extraContext}
+
+【今回の子どもたちの作戦】
+${strategy}`
+      });
+
 
     console.log('=== OpenAI API から返答あり ===');
 
@@ -220,34 +377,52 @@ app.post('/api/judge', async (req, res) => {
 
     console.log('AI RESPONSE:', text);
 
+
     try {
+
       const parsed = JSON.parse(text);
+
       return res.json(parsed);
 
     } catch (parseError) {
-      console.error('JSON PARSE ERROR:', parseError);
-      console.error('RAW AI RESPONSE:', text);
+
+      console.error(
+        'JSON PARSE ERROR:',
+        parseError
+      );
+
+      console.error(
+        'RAW AI RESPONSE:',
+        text
+      );
 
       return res.status(500).json({
-        error: 'AIの返答をJSONとして読み取れませんでした。'
+        error:
+          'AIの返答をJSONとして読み取れませんでした。'
       });
     }
 
   } catch (e) {
-    console.error('OPENAI ERROR:', e);
+
+    console.error(
+      'OPENAI ERROR:',
+      e
+    );
 
     return res.status(500).json({
-      error: 'AI判定に失敗しました。',
-      detail: e.message
+      error:'AI判定に失敗しました。',
+      detail:e.message
     });
   }
 });
+
 
 app.listen(
   process.env.PORT || 3000,
   () => {
     console.log(
-      'http://localhost:' + (process.env.PORT || 3000)
+      'http://localhost:' +
+      (process.env.PORT || 3000)
     );
   }
 );
