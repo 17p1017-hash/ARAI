@@ -159,29 +159,95 @@ const MERCHANT_PROMPT = `あなたは小学生向け協力型ファンタジーT
   "reward":"",
   "next":"どの装備を作る？"
 }`;
-app.post('/api/judge', async (req,res)=>{
+app.post('/api/judge', async (req, res) => {
   console.log('=== /api/judge にリクエストが来た ===');
-console.log('BODY:', req.body);
-  const {eventIndex=0, strategy='', inventory=[], mode='adventure'} = req.body || {};
-  if (!strategy.trim()) return res.status(400).json({error:'作戦を入力してください。'});
-  if (!process.env.OPENAI_API_KEY) return res.status(503).json({error:'OPENAI_API_KEY が未設定です。README.md を確認してください。'});
+  console.log('BODY:', req.body);
+
+  const {
+    eventIndex = 0,
+    strategy = '',
+    inventory = [],
+    mode = 'adventure'
+  } = req.body || {};
+
+  if (!strategy.trim()) {
+    return res.status(400).json({
+      error: '作戦を入力してください。'
+    });
+  }
+
+  if (!process.env.OPENAI_API_KEY) {
+    return res.status(503).json({
+      error: 'OPENAI_API_KEY が未設定です。README.md を確認してください。'
+    });
+  }
+
   try {
-    const client = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
-    const ev = EVENTS[Math.max(0, Math.min(EVENTS.length-1, eventIndex))];
-    const activePrompt = mode === 'merchant' ? MERCHANT_PROMPT : GM_PROMPT;
-   console.log('=== OpenAI API 呼び出し開始 ===');
-console.log('MODEL:', process.env.OPENAI_MODEL || 'gpt-5.6');
-const response = await client.responses.create({
-  model: process.env.OPENAI_MODEL || 'gpt-5.6',
-  input: `${activePrompt}\n\n現在のイベント： ${ev.title}\n状況: ${ev.desc}\n所持アイテム: ${inventory.join('、') || 'なし'}\n子どもたちの作戦: ${strategy}`
+    const client = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
+    });
+
+    const ev = EVENTS[
+      Math.max(0, Math.min(EVENTS.length - 1, eventIndex))
+    ];
+
+    const activePrompt =
+      mode === 'merchant' ? MERCHANT_PROMPT : GM_PROMPT;
+
+    console.log('=== OpenAI API 呼び出し開始 ===');
+    console.log(
+      'MODEL:',
+      process.env.OPENAI_MODEL || 'gpt-5.6'
+    );
+
+    const response = await client.responses.create({
+      model: process.env.OPENAI_MODEL || 'gpt-5.6',
+      input: `${activePrompt}
+
+現在のイベント：${ev.title}
+状況：${ev.desc}
+所持アイテム：${inventory.join('、') || 'なし'}
+子どもたちの作戦：${strategy}`
+    });
+
+    console.log('=== OpenAI API から返答あり ===');
+
+    const text = response.output_text
+      .trim()
+      .replace(/^```json\s*/, '')
+      .replace(/```$/, '')
+      .trim();
+
+    console.log('AI RESPONSE:', text);
+
+    try {
+      const parsed = JSON.parse(text);
+      return res.json(parsed);
+
+    } catch (parseError) {
+      console.error('JSON PARSE ERROR:', parseError);
+      console.error('RAW AI RESPONSE:', text);
+
+      return res.status(500).json({
+        error: 'AIの返答をJSONとして読み取れませんでした。'
+      });
+    }
+
+  } catch (e) {
+    console.error('OPENAI ERROR:', e);
+
+    return res.status(500).json({
+      error: 'AI判定に失敗しました。',
+      detail: e.message
+    });
+  }
 });
 
-console.log('=== OpenAI API から返答あり ===');
-     let text = response.output_text.trim().replace(/^```json\s*/,'').replace(/```$/,'').trim();
-res.json(JSON.parse(text));
-} catch(e) {
-  console.error(e);
-  res.status(500).json({error:'AI判定に失敗しました。もう一度試してください。'});
-}
-});
-app.listen(process.env.PORT || 3000, ()=>console.log('http://localhost:'+(process.env.PORT||3000)));
+app.listen(
+  process.env.PORT || 3000,
+  () => {
+    console.log(
+      'http://localhost:' + (process.env.PORT || 3000)
+    );
+  }
+);
