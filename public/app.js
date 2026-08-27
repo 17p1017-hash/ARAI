@@ -55,10 +55,13 @@ $('judge').onclick=async()=>{
   $('result').classList.add('hidden');
 
   try{
-  const inventory=[
-    ...selected.map(i=>items[i][1]),
-    ...rewards
-  ];
+const inventory=[
+  ...selected.map(i=>items[i][1]),
+  ...rewards.map(name=>{
+    const ability=equipmentAbilities[name];
+    return ability ? `${name}（能力：${ability}）` : name;
+  })
+];
 
   const r=await fetch('/api/judge',{
       method:'POST',
