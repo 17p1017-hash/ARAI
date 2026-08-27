@@ -171,7 +171,6 @@ console.log('BODY:', req.body);
     const activePrompt = mode === 'merchant' ? MERCHANT_PROMPT : GM_PROMPT;
    console.log('=== OpenAI API 呼び出し開始 ===');
 console.log('MODEL:', process.env.OPENAI_MODEL || 'gpt-5.6');
-
 const response = await client.responses.create({
   model: process.env.OPENAI_MODEL || 'gpt-5.6',
   input: `${activePrompt}\n\n現在のイベント： ${ev.title}\n状況: ${ev.desc}\n所持アイテム: ${inventory.join('、') || 'なし'}\n子どもたちの作戦: ${strategy}`
@@ -186,3 +185,44 @@ res.json(JSON.parse(text));
 }
 });
 app.listen(process.env.PORT || 3000, ()=>console.log('http://localhost:'+(process.env.PORT||3000)));
+const response = await client.responses.create({
+  model: process.env.OPENAI_MODEL || 'gpt-5.6',
+  input: `${activePrompt}\n\n現在のイベント： ${ev.title}\n状況: ${ev.desc}\n所持アイテム: ${inventory.join('、') || 'なし'}\n子どもたちの作戦: ${strategy}`
+});
+
+console.log('=== OpenAI API から返答あり ===');
+
+let text = response.output_text
+  .trim()
+  .replace(/^```json\s*/, '')
+  .replace(/```$/, '')
+  .trim();
+
+console.log('AI RESPONSE:', text);
+
+try {
+  const parsed = JSON.parse(text);
+  res.json(parsed);
+} catch (parseError) {
+  console.error('JSON PARSE ERROR:', parseError);
+  console.error('RAW AI RESPONSE:', text);
+
+  res.status(500).json({
+    error: 'AIの返答をJSONとして読み取れませんでした。'
+  });
+}
+
+} catch(e) {
+  console.error('OPENAI ERROR:', e);
+
+  res.status(500).json({
+    error: 'AI判定に失敗しました。',
+    detail: e.message
+  });
+}
+});
+
+app.listen(
+  process.env.PORT || 3000,
+  () => console.log('http://localhost:' + (process.env.PORT || 3000))
+);
