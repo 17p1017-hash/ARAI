@@ -15,7 +15,7 @@ const events=[
   ['ドラゴン出現','大きなドラゴンが道をふさいでいます。戦う以外の方法も自由に考えてOK！'],
   ['古代神殿','古い神殿には謎の扉があります。持っている道具をどう使う？'],
   ['旅の商人','魔王城へ向かう途中、旅の商人に出会いました。集めた素材や持っている道具を使って、交換や装備作りを相談してみよう！'],
-  ['魔王城','ついに魔王城へ到着！魔王との決戦です。みんなで力を合わせて戦おう！']
+  ['魔王城','ついに魔王城へ到着！3ターンの決戦です。みんなで力を合わせて戦おう！']
 ];
 
 let selected=[];
@@ -24,6 +24,7 @@ let eventIndex=0;
 let rewards=[];
 let equipmentAbilities={};
 
+// 魔王戦用
 let bossTurn=1;
 const maxBossTurns=3;
 let bossHistory=[];
@@ -68,7 +69,7 @@ $('start').onclick=()=>{
   renderEvent();
 };
 
-function updateInventoryDisplay(){
+function updateInventory(){
   $('inventory').textContent=[
     ...selected.map(i=>items[i][1]),
     ...rewards
@@ -92,7 +93,7 @@ function renderEvent(){
   $('eventTitle').textContent=events[eventIndex][0];
   $('eventDesc').textContent=events[eventIndex][1];
 
-  updateInventoryDisplay();
+  updateInventory();
 
   $('strategy').value='';
   $('result').classList.add('hidden');
@@ -184,19 +185,13 @@ $('judge').onclick=async()=>{
               : 'adventure',
 
         bossTurn:
-          eventIndex===4
-            ? bossTurn
-            : null,
+          eventIndex===4 ? bossTurn : null,
 
         maxBossTurns:
-          eventIndex===4
-            ? maxBossTurns
-            : null,
+          eventIndex===4 ? maxBossTurns : null,
 
         bossHistory:
-          eventIndex===4
-            ? bossHistory
-            : []
+          eventIndex===4 ? bossHistory : []
       })
     });
 
@@ -223,7 +218,6 @@ $('judge').onclick=async()=>{
       d.options.forEach(option=>{
 
         const box=document.createElement('div');
-
         box.className='merchant-option';
 
         const materials=
@@ -268,7 +262,7 @@ $('judge').onclick=async()=>{
           equipmentAbilities[option.name]=
             option.ability || '';
 
-          updateInventoryDisplay();
+          updateInventory();
 
           $('reward').textContent=
             option.name+' を作ってもらった！';
@@ -296,6 +290,7 @@ $('judge').onclick=async()=>{
       }
     }
 
+    // 魔王戦の結果を記録
     if(eventIndex===4){
 
       bossHistory.push({
@@ -322,17 +317,14 @@ $('judge').onclick=async()=>{
         '次の場面へ →';
     }
 
-    updateInventoryDisplay();
+    updateInventory();
 
     $('result').classList.remove('hidden');
 
   }catch(e){
 
     console.error(e);
-
-    alert(
-      'エラー：'+e.message
-    );
+    alert('エラー：'+e.message);
 
   }finally{
 
@@ -343,20 +335,18 @@ $('judge').onclick=async()=>{
 
 $('nextEvent').onclick=()=>{
 
+  // 魔王戦だけ3ターン
   if(eventIndex===4){
 
     if(bossTurn<maxBossTurns){
 
       bossTurn++;
-
       renderEvent();
-
       return;
     }
 
     $('game').classList.add('hidden');
     $('finish').classList.remove('hidden');
-
     return;
   }
 
