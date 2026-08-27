@@ -171,11 +171,13 @@ console.log('BODY:', req.body);
     const activePrompt = mode === 'merchant' ? MERCHANT_PROMPT : GM_PROMPT;
    console.log('=== OpenAI API 呼び出し開始 ===');
 console.log('MODEL:', process.env.OPENAI_MODEL || 'gpt-5.6');
-    const response = await client.responses.create({
+
+const response = await client.responses.create({
   model: process.env.OPENAI_MODEL || 'gpt-5.6',
   input: `${activePrompt}\n\n現在のイベント： ${ev.title}\n状況: ${ev.desc}\n所持アイテム: ${inventory.join('、') || 'なし'}\n子どもたちの作戦: ${strategy}`
-})
-    console.log('=== OpenAI API から返答あり ===');
+});
+
+console.log('=== OpenAI API から返答あり ===');
      let text = response.output_text.trim().replace(/^```json\s*/,'').replace(/```$/,'').trim();
 res.json(JSON.parse(text));
 } catch(e) {
