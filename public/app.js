@@ -117,8 +117,10 @@ if(eventIndex === 3 && Array.isArray(d.options)){
   );
 
   if (!rewards.includes(option.name)) {
-    rewards.push(option.name);
-  }
+  rewards.push(option.name);
+}
+
+equipmentAbilities[option.name] = option.ability || '';
 
   $('inventory').textContent = [
     ...selected.map(i => items[i][1]),
