@@ -1,4 +1,4 @@
-const express = require('express');
+さconst express = require('express');
 const path = require('path');
 const OpenAI = require('openai');
 const app = express();
@@ -172,10 +172,10 @@ console.log('BODY:', req.body);
    console.log('=== OpenAI API 呼び出し開始 ===');
 console.log('MODEL:', process.env.OPENAI_MODEL || 'gpt-5.6');
     const response = await client.responses.create({
-      console.log('=== OpenAI API から返答あり ===');
   model: process.env.OPENAI_MODEL || 'gpt-5.6',
   input: `${activePrompt}\n\n現在のイベント： ${ev.title}\n状況: ${ev.desc}\n所持アイテム: ${inventory.join('、') || 'なし'}\n子どもたちの作戦: ${strategy}`
-});
+})
+    console.log('=== OpenAI API から返答あり ===');
      let text = response.output_text.trim().replace(/^```json\s*/,'').replace(/```$/,'').trim();
 res.json(JSON.parse(text));
 } catch(e) {
